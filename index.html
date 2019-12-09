@@ -7,324 +7,39 @@
     <title>Drug Offense Map</title>
 
     <link rel="stylesheet" href="https://js.arcgis.com/4.12/esri/themes/light/main.css" />
-    <script src="https://js.arcgis.com/4.12/"></script>
-
-    <style>
-        html,
-        body,
-        #viewDiv {
-            padding: 0;
-            margin: 0;
-            height: 100%;
-            width: 100%;
-        }
-    </style>
-
+    <link rel="stylesheet" href="esri.css"/>
+    <link rel="stylesheet" href="app.css"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 </head>
 
 <body>
-    <div id="viewDiv"></div>
-    <script src='./data.js'></script>
+    <div class="container-fluid m-0 p-0">
+        <!-- <button id="changeType">click to change</button> -->
+
+        <form>
+            <select id="changeType" >
+              <option default value='false'>All</option>
+              <option value="Theft">Theft</option>
+              <option value="Traffic">Traffic</option>
+              <option value="Drugs">Drugs</option>
+              <option value="Liqour">Liqour</option>
+            </select>
+          </form>
+        <div id="viewDiv"></div>
+    </div>
+    
+    <script src="https://js.arcgis.com/4.12/"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script>
-        // var data = {
-        //     resource_id: '0ce3411a-2fc6-4302-a33f-167f68608a20', // the resource id
-        //     limit: 5, // get 5 results
-        //     q: 'jones' // query for 'jones'
-        // };
-        // $.ajax({
-        //     url: `https://www.phoenixopendata.com/api/3/action/datastore_search_sql?sql=SELECT * from "0ce3411a-2fc6-4302-a33f-167f68608a20" WHERE title LIKE 'jones'`,
-        //     // dataType: 'jsonp',
-        //     success: function (data) {
-        //         alert('Total results found: ' + data.result.total)
-        //     }
-        // });
-        require([
-            "esri/Map",
-            "esri/views/MapView",
-            "esri/layers/CSVLayer",
-            "esri/layers/FeatureLayer",
-            "esri/Graphic",
-            "esri/layers/support/Field",
-            "esri/layers/GraphicsLayer",
-            "esri/geometry/Point",
-            "esri/widgets/TimeSlider",
-            "esri/layers/support/TimeInfo"
-        ], function (Map, MapView, CSVLayer, FeatureLayer, Graphic, Field, GraphicsLayer, Point, TimeSlider, TimeInfo) {
-
-            console.log(crimeData[0])
-            var gLayer = new GraphicsLayer();
-            var point = {
-                type: "point", // autocasts as new Point()
-                longitude: crimeData[0].Longitude,
-                latitude: crimeData[0].Latitude,
-            };
-            crimeData.map(item => {
-                var g = new Graphic({
-                    geometry: {
-                        type: "point", // autocasts as new Point()
-                        longitude: item.Longitude,
-                        latitude: item.Latitude,
-                    },
-                    attributes: item
-                });
-                gLayer.add(g);
-            });
-
-            const fields = [
-                new Field({
-                    name: "ObjectID",
-                    alias: "ObjectID",
-                    type: "oid"
-                }), new Field({
-                    name: "Address",
-                    alias: "Address",
-                    type: "string"
-                }), new Field({
-                    name: "Category",
-                    alias: "Category",
-                    type: "string"
-                }), new Field({
-                    name: "OccurredOn",
-                    alias: "OccurredOn",
-                    type: "long"
-                }), new Field({
-                    name: "OccurredTo",
-                    alias: "OccurredTo",
-                    type: "long"
-                })
-            ];
-
-
-            var layer = new FeatureLayer({
-                source: gLayer.graphics,
-                objectIdField: "id",
-                fields: fields,
-                geometryType: "point",
-                timeInfo: {
-                    startField: "OccurredOn", // name of the date field
-                    // endField: "OccurredTo", // name of the date field
-                    interval: {
-                        // set time interval to one day
-                        unit: "days",
-                        value: 1
-                    }
-                }
-            });
-            console.log(layer)
-
-            layer.popupTemplate = {
-                title: "{Address}",
-                content: [{
-                    type: "fields", // Autocasts as new FieldsContent()
-                    // Autocasts as new FieldInfo[]
-                    fieldInfos: [{
-                        fieldName: "Category",
-                        label: "Category",
-                        // Autocasts as new FieldInfoFormat()
-                        // format: {
-                        //     digitSeparator: true
-                        // }
-                    }]
-                }]
-            };
-            var map = new Map({
-                basemap: "gray"
-            });
-
-            var view = new MapView({
-                container: "viewDiv",
-                map: map,
-                zoom: 10, // Sets zoom level based on level of detail (LOD)
-                center: [-112, 33]
-            });
-            const otherSym = {
-                type: "simple-marker", // autocasts as new SimpleLineSymbol()
-                color: "#ef37ac",
-                width: "0.5px",
-                style: "circle"
-            };
-            const drugOffense = {
-                type: "simple-marker", // autocasts as new SimpleLineSymbol()
-                color: "#eb4034",
-                width: "0.5px",
-                style: "circle"
-            };
-
-            const renderer = {
-                type: "unique-value", // autocasts as new UniqueValueRenderer()
-                // legendOptions: {
-                //     title: "Freeway type"
-                // },
-                defaultSymbol: otherSym,
-                defaultLabel: "Test",
-                field: "Category",
-                uniqueValueInfos: [
-                    {
-                        value: "DRUG OFFENSE", // code for interstates/freeways
-                        symbol: drugOffense,
-                        label: "Drug Offense"
-                    }
-                ]
-            };
-
-            /********************
-             * Add feature layer
-             ********************/
-
-            // Carbon storage of trees in Warren Wilson College.
-            // var featureLayer = new FeatureLayer({
-            //     url:
-            //         "https://gisweb3.azwater.gov/arcgis/rest/services/Wells/WellRegistry/MapServer/2"
-            // });
-            layer.renderer = renderer;
-            map.add(layer);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            const timeSlider = new TimeSlider({
-                container: "timeSlider",
-                playRate: 1,
-                stops: {
-                    interval: {
-                        value: 5,
-                        unit: "hours"
-                    }
-                }
-            });
-            view.ui.add(timeSlider, "manual");
-
-            // // wait till the layer view is loaded
-            view.whenLayerView(layer).then(function (lv) {
-                layerView = lv;
-                // start time of the time slider - 5/25/2019
-                const start = new Date(2012, 4, 25);
-                // set time slider's full extent to
-                // 5/25/5019 - until end date of layer's fullTimeExtent
-                console.log(layer.timeInfo.fullTimeExtent.start)
-                console.log(layer.timeInfo.fullTimeExtent.end)
-                timeSlider.fullTimeExtent = {
-                    start: layer.timeInfo.fullTimeExtent.start,
-                    end: layer.timeInfo.fullTimeExtent.end
-                };
-                debugger
-
-                // We will be showing earthquakes with one day interval
-                // when the app is loaded we will show earthquakes that
-                // happened between 5/25 - 5/26.
-                const end = new Date(start);
-                // end of current time extent for time slider
-                // showing earthquakes with one day interval
-                end.setDate(end.getDate() + 1);
-
-                // Values property is set so that timeslider
-                // widget show the first day. We are setting
-                // the thumbs positions.
-                timeSlider.values = [start, end];
-            });
-
-            // watch for time slider timeExtent change
-            timeSlider.watch("timeExtent", function () {
-                // only show earthquakes happened up until the end of
-                // timeSlider's current time extent.
-                layer.definitionExpression =
-                    "OccurredOn <= " + timeSlider.timeExtent.end.getTime();
-
-                // now gray out earthquakes that happened before the time slider's current
-                // timeExtent... leaving footprint of earthquakes that already happened
-                layerView.effect = {
-                    filter: {
-                        timeExtent: timeSlider.timeExtent,
-                        geometry: view.extent
-                    },
-                    excludedEffect: "grayscale(20%) opacity(12%)"
-                };
-
-                // run statistics on earthquakes fall within the current time extent
-                // const statQuery = layerView.effect.filter.createQuery();
-                // statQuery.outStatistics = [
-                //     magMax,
-                //     magAvg,
-                //     magMin,
-                //     tremorCount,
-                //     avgDepth
-                // ];
-
-                // layer
-                //     .queryFeatures(statQuery)
-                //     .then(function (result) {
-                //         let htmls = [];
-                //         statsDiv.innerHTML = "";
-                //         if (result.error) {
-                //             return result.error;
-                //         } else {
-                //             if (result.features.length >= 1) {
-                //                 var attributes = result.features[0].attributes;
-                //                 for (name in statsFields) {
-                //                     if (attributes[name] && attributes[name] != null) {
-                //                         const html =
-                //                             "<br/>" +
-                //                             statsFields[name] +
-                //                             ": <b><span> " +
-                //                             attributes[name].toFixed(2) +
-                //                             "</span></b>";
-                //                         htmls.push(html);
-                //                     }
-                //                 }
-                //                 var yearHtml =
-                //                     "<span>" +
-                //                     result.features[0].attributes["tremor_count"] +
-                //                     "</span> earthquakes were recorded between " +
-                //                     timeSlider.timeExtent.start.toLocaleDateString() +
-                //                     " - " +
-                //                     timeSlider.timeExtent.end.toLocaleDateString() +
-                //                     ".<br/>";
-
-                //                 if (htmls[0] == undefined) {
-                //                     statsDiv.innerHTML = yearHtml;
-                //                 } else {
-                //                     statsDiv.innerHTML =
-                //                         yearHtml + htmls[0] + htmls[1] + htmls[2] + htmls[3];
-                //                 }
-                //             }
-                //         }
-                //     })
-                //     .catch(function (error) {
-                //         console.log(error);
-                //     });
-            });
-        });
+    <!-- <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script> -->
+    <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>    <script src='./data.js'></script> -->
+    <script src='./data.js'></script>
+    <script src='./API.js'></script>
+    <script src='./View.js'></script>
+    <script src='./CreateLayer.js'></script>
+    <!-- <script src='./esri_layerList.js'></script> -->
+    <script src='./esri.js'></script>
+   
     </script>
 </body>
 

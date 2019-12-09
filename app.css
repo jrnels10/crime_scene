@@ -1,0 +1,14 @@
+html,
+body,
+.container-fluid {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+#changeType {
+  position: absolute;
+  z-index: 100;
+  right: 20px;
+}
