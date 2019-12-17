@@ -5,9 +5,24 @@
   margin: 0;
 }
 
+.esri-zoom {
+  background-color: #051339;
+  color: #ffffff;
+}
+
 /* time-slider */
 
 .esri-time-slider {
   width: 100%;
   bottom: 0;
+  background-color: #051339;
+  color: #ffffff;
+}
+.esri-slider {
+  background-color: #051339;
+  color: #ffffff;
+}
+.esri-time-slider--time-window button {
+  background-color: #051339;
+  color: #ffffff;
 }
