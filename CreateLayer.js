@@ -1,7 +1,6 @@
-function createLayer(data) {
+async function createLayer(data, map, view, timeSlider, yearText) {
     var layer;
-
-    require([
+    return require([
         'esri/Map',
         'esri/views/MapView',
         'esri/widgets/LayerList',
@@ -51,11 +50,11 @@ function createLayer(data) {
             })
         ];
 
-        const categories = [];
+
         data.map(item => {
             if (item.Date !== null) {
                 // console.log(item.Date)
-                categories.push(item.Type)
+
                 var g = new Graphic({
                     geometry: {
                         type: 'point', // autocasts as new Point()
@@ -68,8 +67,7 @@ function createLayer(data) {
             }
         });
 
-        const categoryList = new Set(categories)
-        console.log(categoryList)
+
         layer = new FeatureLayer({
             source: gLayer.graphics,
             objectIdField: 'id',
@@ -210,9 +208,9 @@ function createLayer(data) {
             field: 'Type',
             uniqueValueInfos: [
                 {
-                    value: "Theft", // code for interstates/freeways
+                    value: "Burglary", // code for interstates/freeways
                     symbol: rendererType.theft,
-                    label: "theft"
+                    label: "Burglary"
                 },
                 {
                     value: "Traffic", // code for interstates/freeways
@@ -272,6 +270,91 @@ function createLayer(data) {
             ]
         };
         layer.renderer = renderer;
+        map.add(layer);
+        let typeSelected = '';
+        const categories = data.map(item => {
+            return item.Type;
+        })
+        const categoriesList = categories.filter((item, idx) => { return categories.indexOf(item) == idx });
+
+        categoriesList.map(item => {
+            const li = $('<li></li>');
+            $("#type-selected").append(li.html(item))
+        })
+
+
+        // debugger
+
+        view.whenLayerView(layer).then(function (lv) {
+            layerView = lv;
+
+            // start time of the time slider - 5/25/2019
+            const start = new Date(yearText, 11, 12);
+            // set time slider's full extent to
+            // 5/25/5019 - until end date of layer's fullTimeExtent
+            timeSlider.fullTimeExtent = {
+                start: start,
+                end: layer.timeInfo.fullTimeExtent.end
+            };
+
+            // We will be showing earthquakes with one day interval
+            // when the app is loaded we will show earthquakes that
+            // happened between 5/25 - 5/26.
+            const end = new Date(start);
+            // end of current time extent for time slider
+            // showing earthquakes with one day interval
+            end.setDate(end.getDate() + 1);
+
+            // Values property is set so that timeslider
+            // widget show the first day. We are setting
+            // the thumbs positions.
+            timeSlider.values = [start, end];
+        });
+
+        // watch for time slider timeExtent change
+        timeSlider.watch("timeExtent", function () {
+            // only show earthquakes happened up until the end of
+            // timeSlider's current time extent.
+            layer.definitionExpression =
+                `OccurredOn <= '${timeSlider.timeExtent.end.getTime()}'`
+
+            // now gray out earthquakes that happened before the time slider's current
+            // timeExtent... leaving footprint of earthquakes that already happened
+            layerView.effect = {
+                filter: {
+                    timeExtent: timeSlider.timeExtent,
+                    geometry: view.extent
+                },
+                excludedEffect: "grayscale(20%) opacity(15%)"
+            };
+
+            // // // // wait till the layer view is loaded
+            // view.whenLayerView(lyr).then(function (lv) {
+            //   layerView = lv;
+            //   const start = new Date(2009, 4, 25);
+            //   timeSlider.fullTimeExtent = {
+            //     start: lyr.timeInfo.fullTimeExtent.start,
+            //     end: new Date()
+            //   };
+            //   const end = new Date(start);
+            //   end.setDate(end.getDate() + 100);
+            //   timeSlider.values = [start, end];
+            // });
+
+            // // watch for time slider timeExtent change
+            // timeSlider.watch('timeExtent', function () {
+            //   `OccurredOn <= '${timeSlider.timeExtent.start.getTime()}'`
+            //   layerView.effect = {
+            //     filter: {
+            //       timeExtent: timeSlider.timeExtent,
+            //       geometry: view.extent
+            //     },
+            //     excludedEffect: 'grayscale(20%) opacity(12%)'
+            //   };
+            // });
+        })
+        return view;
+
+
     });
-    return layer;
 }

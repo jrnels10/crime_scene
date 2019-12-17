@@ -12,3 +12,104 @@ body,
   z-index: 100;
   right: 20px;
 }
+.searchByCity-container {
+  background-color: #051339;
+}
+.search-container {
+  position: absolute;
+  left: 50%;
+  margin: 10px 0 0 0;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+  z-index: 100;
+  border-radius: 15px;
+  outline: none;
+  border: none;
+  padding: 3px 9px 3px 3px;
+}
+.searchByCity-container > i {
+  color: #ffffff;
+  padding-left: 100px;
+}
+.typeOfCrime-container {
+  width: 140px;
+  background-color: #051339;
+  position: absolute;
+  right: 20px;
+  margin: 10px 0 0 0;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+  z-index: 100;
+  border-radius: 15px;
+  outline: none;
+  border: none;
+  padding: 3px;
+}
+
+#searchByCity {
+  border-radius: 15px 0px 0px 15px;
+  outline: none;
+  border: none;
+  height: 25px;
+  text-indent: 10px;
+  width: 150px;
+}
+
+#searchByYear {
+  border-radius: 0px 15px 15px 0px;
+  outline: none;
+  border: none;
+  height: 25px;
+  position: absolute;
+  left: 150px;
+  width: 100px;
+  /* text-indent: 10px; */
+}
+.card {
+  background: none !important;
+  outline: none !important;
+  border: none !important;
+  padding: 2px !important;
+  overflow: auto;
+  max-height: 400px;
+}
+.card::-webkit-scrollbar {
+  width: 5px !important;
+}
+
+.card::-webkit-scrollbar-thumb {
+  border-radius: 20px;
+  background-color: #ffffff;
+}
+
+#crime-dropDown {
+  margin-top: 10px;
+}
+.typeOfCrime-container p {
+  margin: 3px !important;
+}
+#crime-filter {
+  border-radius: 10px;
+  width: 100%;
+  background: #ffffff;
+  color: #051339;
+}
+ul {
+  list-style-type: none;
+  padding: 2px;
+}
+li {
+  margin-bottom: 2px;
+  border-bottom: 1px solid #cccccc;
+  color: #ffffff;
+}
+
+.searchByCity-container i {
+  color: #ffffff;
+  position: absolute;
+  right: 5px;
+}
+
+button span {
+  color: #ffffff;
+}

@@ -3,23 +3,16 @@ $(document).ready(function () {
   return require([
     'esri/Map',
     'esri/views/MapView',
-    'esri/widgets/LayerList',
-    'esri/layers/FeatureLayer',
-    'esri/Graphic',
-    'esri/layers/support/Field',
-    'esri/layers/GraphicsLayer',
     'esri/widgets/TimeSlider',
-    'esri/layers/support/TimeInfo'
+    'esri/layers/support/TimeInfo',
+    "esri/widgets/Expand",
+    "esri/widgets/BasemapGallery"
   ], function (
     Map,
     MapView,
-    LayerList,
-    FeatureLayer,
-    Graphic,
-    Field,
-    GraphicsLayer,
     TimeSlider,
-    TimeInfo
+    Expand,
+    BasemapGallery
   ) {
     var map = new Map({
       basemap: 'gray'
@@ -29,58 +22,58 @@ $(document).ready(function () {
       container: 'viewDiv',
       map: map,
       zoom: 10, // Sets zoom level based on level of detail (LOD)
-      center: [-112, 33]
+      center: [-112, 33.35]
     });
+    var basemapGallery = new BasemapGallery({
+      view: view,
+      container: document.createElement("div")
+    });
+
+    var bgExpand = new Expand({
+      view: view,
+      content: basemapGallery
+    });
+
+    $('#city-selected li').on('click', function () {
+      typeSelected = $(this).text()
+      $("#city-text").html(typeSelected);
+      // layer.definitionExpression = `OccurredOn <= '${timeSlider.timeExtent.end.getTime()}' AND Type = '${typeSelected}'`
+    })
+    $('#year-selected li').on('click', function () {
+      typeSelected = $(this).text()
+      $("#year-text").html(typeSelected);
+      // layer.definitionExpression = `OccurredOn <= '${timeSlider.timeExtent.end.getTime()}' AND Type = '${typeSelected}'`
+    })
+    $('#type-selected li').on('click', function () {
+      typeSelected = $(this).text()
+      $("#type-text").html(typeSelected);
+      // layer.definitionExpression = `OccurredOn <= '${timeSlider.timeExtent.end.getTime()}' AND Type = '${typeSelected}'`
+    })
+
 
     const timeSlider = new TimeSlider({
       container: 'timeSlider',
-      playRate: 500,
+      playRate: 100,
       stops: {
         interval: {
           value: 1,
-          unit: 'months'
+          unit: 'days'
         }
       }
     });
+
+    // view.ui.add(bgExpand, 'top-right');
     view.ui.add(timeSlider, 'manual');
-
-    getDataByCity('phoenix')
-      .then(res => {
-        let typeSelected = 'Drugs'
-        const lyr = createLayer(res)
-        $('#changeType').on('change', function () {
-          typeSelected = $('#changeType').val()
-          lyr.definitionExpression = `OccurredOn <= '${timeSlider.timeExtent.end.getTime()}' AND Type = '${typeSelected}'`
-        })
-        // debugger
-        map.add(lyr);
-
-        // // // wait till the layer view is loaded
-        view.whenLayerView(lyr).then(function (lv) {
-          layerView = lv;
-          const start = new Date(2013, 4, 25);
-          timeSlider.fullTimeExtent = {
-            start: lyr.timeInfo.fullTimeExtent.start,
-            end: new Date()
-          };
-          const end = new Date(start);
-          end.setDate(end.getDate() + 10);
-          timeSlider.values = [start, end];
+    $(".fa-search").on('click', () => {
+      let cityText = $("#city-text").text();
+      let yearText = $("#year-text").text();
+      let typeText = $("#type-text").text();
+      getDataByCity(cityText, yearText, typeText)
+        .then((res) => {
+          createLayer(res, map, view, timeSlider, year)
         });
 
-        // watch for time slider timeExtent change
-        timeSlider.watch('timeExtent', function () {
-          `OccurredOn <= '${timeSlider.timeExtent.end.getTime()}' AND Type = '${typeSelected}'`
-          layerView.effect = {
-            filter: {
-              timeExtent: timeSlider.timeExtent,
-              geometry: view.extent
-            },
-            excludedEffect: 'grayscale(20%) opacity(12%)'
-          };
-        });
-      })
-    return view;
+    });
+  })
 
-  });
 });
