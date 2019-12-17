@@ -44,8 +44,9 @@ $(document).ready(function () {
     });
     view.ui.add(timeSlider, 'manual');
 
-    getDataByCity('phoenix')
+    getDataByCity('Phoenix')
       .then(res => {
+        console.log(res.length, res)
         let typeSelected = 'Drugs'
         const lyr = createLayer(res)
         $('#changeType').on('change', function () {
