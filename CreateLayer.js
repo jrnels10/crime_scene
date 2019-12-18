@@ -1,4 +1,4 @@
-async function createLayer(data, map, view, timeSlider, yearText) {
+async function createLayer(data, map, view, timeSlider, startDate, endDate) {
     var layer;
     return require([
         'esri/Map',
@@ -50,7 +50,7 @@ async function createLayer(data, map, view, timeSlider, yearText) {
             })
         ];
 
-
+        debugger
         data.map(item => {
             if (item.Date !== null) {
                 // console.log(item.Date)
@@ -271,16 +271,15 @@ async function createLayer(data, map, view, timeSlider, yearText) {
         };
         layer.renderer = renderer;
         map.add(layer);
-        let typeSelected = '';
-        const categories = data.map(item => {
-            return item.Type;
-        })
-        const categoriesList = categories.filter((item, idx) => { return categories.indexOf(item) == idx });
+        // const categories = data.map(item => {
+        //     return item.Type;
+        // })
+        // const categoriesList = categories.filter((item, idx) => { return categories.indexOf(item) == idx });
 
-        categoriesList.map(item => {
-            const li = $('<li></li>');
-            $("#type-selected").append(li.html(item))
-        })
+        // categoriesList.map(item => {
+        //     const li = $('<li></li>');
+        //     $("#type-selected").append(li.html(item))
+        // })
 
 
         // debugger
@@ -289,7 +288,7 @@ async function createLayer(data, map, view, timeSlider, yearText) {
             layerView = lv;
 
             // start time of the time slider - 5/25/2019
-            const start = new Date(yearText, 11, 12);
+            const start = new Date(startDate);
             // set time slider's full extent to
             // 5/25/5019 - until end date of layer's fullTimeExtent
             timeSlider.fullTimeExtent = {
@@ -303,7 +302,7 @@ async function createLayer(data, map, view, timeSlider, yearText) {
             const end = new Date(start);
             // end of current time extent for time slider
             // showing earthquakes with one day interval
-            end.setDate(end.getDate() + 1);
+            end.setDate(end.getDate() + 2);
 
             // Values property is set so that timeslider
             // widget show the first day. We are setting

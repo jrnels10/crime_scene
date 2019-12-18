@@ -6,7 +6,7 @@ body,
   height: 100%;
   width: 100%;
 }
-
+/* 
 #changeType {
   position: absolute;
   z-index: 100;
@@ -48,6 +48,7 @@ body,
 
 #searchByCity {
   border-radius: 15px 0px 0px 15px;
+  border-radius: 5px;
   outline: none;
   border: none;
   height: 25px;
@@ -63,7 +64,6 @@ body,
   position: absolute;
   left: 150px;
   width: 100px;
-  /* text-indent: 10px; */
 }
 .card {
   background: none !important;
@@ -112,4 +112,77 @@ li {
 
 button span {
   color: #ffffff;
+} */
+
+.input-container {
+  position: absolute;
+  z-index: 100;
+  right: 10px;
+  top: 10px;
+  width: 500px;
+  height: 65px;
+  background-color: #051339;
+  border-radius: 10px;
+}
+
+.date-container {
+  position: relative;
+  width: 100%;
+  margin: 0 !important;
+}
+.date-container p {
+  color: #ffffff;
+}
+.date-container div input {
+  width: 100%;
+  border-radius: 5px;
+  outline: none;
+  border: none;
+  height: 30px;
+  text-indent: 5px;
+}
+ul {
+  list-style-type: none;
+  padding: 2px;
+}
+li {
+  margin-bottom: 2px;
+  border-bottom: 1px solid #020716;
+  color: #051339;
+}
+.card {
+  outline: none !important;
+  border: none !important;
+  padding: 2px !important;
+  overflow: auto;
+  max-height: 400px;
+}
+.card::-webkit-scrollbar {
+  width: 5px !important;
+}
+
+.card::-webkit-scrollbar-thumb {
+  border-radius: 20px;
+  background-color: #ffffff;
+}
+
+#type-filter {
+  background-color: #ffffff;
+  height: 30px;
+  width: 100%;
+  line-height: 0;
+}
+
+.type-label {
+  width: 100px;
+  margin-bottom: 0px;
+}
+/* calendar */
+.ui-datepicker {
+  margin-top: 5px;
+  width: 220px !important;
+}
+
+i {
+  margin-top: 18px;
 }
