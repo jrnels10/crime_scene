@@ -287,38 +287,23 @@ async function createLayer(data, map, view, timeSlider, startDate, endDate) {
         view.whenLayerView(layer).then(function (lv) {
             layerView = lv;
 
-            // start time of the time slider - 5/25/2019
+            // start and end dats for moving timeSlider
             const start = new Date(startDate);
-            // set time slider's full extent to
-            // 5/25/5019 - until end date of layer's fullTimeExtent
+            const end = new Date(start);
+            end.setDate(end.getDate() + 2);
+
+            // timeSlider time range
             timeSlider.fullTimeExtent = {
                 start: start,
                 end: layer.timeInfo.fullTimeExtent.end
             };
 
-            // We will be showing earthquakes with one day interval
-            // when the app is loaded we will show earthquakes that
-            // happened between 5/25 - 5/26.
-            const end = new Date(start);
-            // end of current time extent for time slider
-            // showing earthquakes with one day interval
-            end.setDate(end.getDate() + 2);
-
-            // Values property is set so that timeslider
-            // widget show the first day. We are setting
-            // the thumbs positions.
             timeSlider.values = [start, end];
         });
 
-        // watch for time slider timeExtent change
         timeSlider.watch("timeExtent", function () {
-            // only show earthquakes happened up until the end of
-            // timeSlider's current time extent.
             layer.definitionExpression =
-                `OccurredOn <= '${timeSlider.timeExtent.end.getTime()}'`
-
-            // now gray out earthquakes that happened before the time slider's current
-            // timeExtent... leaving footprint of earthquakes that already happened
+                `OccurredOn <= '${timeSlider.timeExtent.end.getTime()}'`;
             layerView.effect = {
                 filter: {
                     timeExtent: timeSlider.timeExtent,
@@ -326,34 +311,6 @@ async function createLayer(data, map, view, timeSlider, startDate, endDate) {
                 },
                 excludedEffect: "grayscale(20%) opacity(15%)"
             };
-
-            // // // // wait till the layer view is loaded
-            // view.whenLayerView(lyr).then(function (lv) {
-            //   layerView = lv;
-            //   const start = new Date(2009, 4, 25);
-            //   timeSlider.fullTimeExtent = {
-            //     start: lyr.timeInfo.fullTimeExtent.start,
-            //     end: new Date()
-            //   };
-            //   const end = new Date(start);
-            //   end.setDate(end.getDate() + 100);
-            //   timeSlider.values = [start, end];
-            // });
-
-            // // watch for time slider timeExtent change
-            // timeSlider.watch('timeExtent', function () {
-            //   `OccurredOn <= '${timeSlider.timeExtent.start.getTime()}'`
-            //   layerView.effect = {
-            //     filter: {
-            //       timeExtent: timeSlider.timeExtent,
-            //       geometry: view.extent
-            //     },
-            //     excludedEffect: 'grayscale(20%) opacity(12%)'
-            //   };
-            // });
-        })
-        return view;
-
-
+        });
     });
-}
+};

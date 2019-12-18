@@ -40,17 +40,14 @@ $(document).ready(function () {
     $('#city-selected li').on('click', function () {
       typeSelected = $(this).text()
       $("#city-text").html(typeSelected);
-      // layer.definitionExpression = `OccurredOn <= '${timeSlider.timeExtent.end.getTime()}' AND Type = '${typeSelected}'`
     })
     $('#year-selected li').on('click', function () {
       typeSelected = $(this).text()
       $("#year-text").html(typeSelected);
-      // layer.definitionExpression = `OccurredOn <= '${timeSlider.timeExtent.end.getTime()}' AND Type = '${typeSelected}'`
     })
     $('#type-selected li').on('click', function () {
       typeSelected = $(this).text();
       $("#type-filter").html(typeSelected);
-      // layer.definitionExpression = `OccurredOn <= '${timeSlider.timeExtent.end.getTime()}' AND Type = '${typeSelected}'`
     })
 
 
@@ -70,23 +67,19 @@ $(document).ready(function () {
         console.log(res)
       })
     })
-    // view.ui.add(bgExpand, 'top-right');
     view.ui.add(timeSlider, 'manual');
     $(".fa-search").on('click', () => {
       let startDate = $("#firstDate").val();
       let endDate = $("#lastDate").val();
-      // let cityText = $("#city-text").text();
       let yearText = $("#year-text").text();
       let crimeType = $("#type-text").text();
       let latLonMin = webMercatorUtils.xyToLngLat(view.extent.xmin, view.extent.ymin);
       let latLonMax = webMercatorUtils.xyToLngLat(view.extent.xmax, view.extent.ymax);
-      debugger
       getDataByCity('phoenix', startDate, endDate, latLonMax[1], latLonMax[0], latLonMin[1], latLonMin[0], typeSelected)
         .then((res) => {
           createLayer(res, map, view, timeSlider, startDate, endDate)
         });
 
     });
-  })
-
+  });
 });
