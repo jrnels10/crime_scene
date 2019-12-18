@@ -5,96 +5,55 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
     <title>Drug Offense Map</title>
-
     <link rel="stylesheet" href="https://js.arcgis.com/4.12/esri/themes/light/main.css" />
     <link rel="stylesheet" href="esri.css"/>
     <link rel="stylesheet" href="app.css"/>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">    <link
     rel="stylesheet"
     href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
-  /></head>
+  />
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+</head>
 
 <body>
     <div class="container-fluid m-0 p-0">
-        <!-- <button id="changeType">click to change</button> -->
-        <div class="row search-container">
-
-     
-          <div class="col-4">
-        <div class="searchByCity-container">
-
-          <p>
-            <button class="btn" id='city-filter' type="button" data-toggle="collapse" data-target=".city-dropDown" aria-expanded="false" aria-controls="city-dropDown">
-              <span id="city-text">Search by city</span>  
-            </button>
-          </p>
-          <div class="collapse city-dropDown">
-            <div class="card card-body">
-              <ul id="city-selected">
-                <li>Phoenix</li>
-                <li>Gilbert</li>
-                <li>Tempe</li>
-                <li>Glendale</li>
-              </ul>
+      <div class="input-container">
+        <div class="row date-container">
+          <div class="col-3 col-xs-12">
+            <p>Start Date: <input type="text" placeholder="01/01/2018" id="firstDate"></p> 
+          </div>
+          <div class="col-3 col-xs-12">
+              <p>End Date: <input type="text" placeholder="12/31/2018" id="lastDate"></p>
             </div>
-          </div>
-        </div>
-        </div>
-        <div class="col-4">
-          <div class="searchByCity-container">
+            <div class="col-5 col-xs-12">
 
-          <p>
-            <button class="btn" id='year-filter' type="button" data-toggle="collapse" data-target=".year-dropDown" aria-expanded="false" aria-controls="year-dropDown">
-              <span id="year-text">Search by year</span>  
-            </button>
-          </p>
-          <div class="collapse year-dropDown">
-            <div class="card card-body">
-              <ul id="year-selected">
-                <li>2019</li>
-                <li>2018</li>
-                <li>2017</li>
-                <li>2016</li>
-                <li>2015</li>
-                <li>2014</li>
-                <li>2013</li>
-                <li>2012</li>
-                </ul> 
+              <p class="type-label">Type of Crime</p>
+                <button class="btn" id='type-filter' type="button" data-toggle="collapse" data-target=".type-dropDown" aria-expanded="false" aria-controls="type-dropDown">
+                  All
+                </button>
+              <div class="collapse type-dropDown">
+                <div class="card card-body">
+                  <ul id="type-selected">
+                  <li>Burglary</li>
+                  <li>Assault</li>
+                  <li>Traffic</li>
+                  <li>Theft</li>
+                  </ul> 
+                </div>
+              </div>
             </div>
-          </div>
-          </div>
-        </div>
-          <div class="col-4">
-            <div class="searchByCity-container">
-
-          <p>
-            <button class="btn" id='type-filter' type="button" data-toggle="collapse" data-target=".type-dropDown" aria-expanded="false" aria-controls="type-dropDown">
-              <span id="type-text">Select</span>  
-            </button>
-          </p>
-          <div class="collapse type-dropDown">
-            <div class="card card-body">
-              <ul id="type-selected">
-              <li>Burglary</li>
-              <li>Assault</li>
-              <li>Traffic</li>
-              <li>Theft</li>
-              </ul> 
-            </div>
-          </div>
+            <div class="col-1 p-0 m-0 col-xs-12">
+            <i class="fas fa-search fa-2x text-white"></i>
         
-        </div>
+      </div>
+    </div>
 
-          <!-- <input id="searchByCity" type="text" placeholder="search by city"/>
-          <input id="searchByYear" type="number" placeholder="search by year"/> -->
-          <i class="fas fa-search"></i>
-        </div>  
-       </div> 
+      </div>
           <div id="viewDiv"></div>
     </div>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <!-- <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script> -->
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>    <script src='./data.js'></script>
     <script src="https://js.arcgis.com/4.12/"></script>
@@ -102,7 +61,6 @@
     <script src='./API.js'></script>
     <script src='./View.js'></script>
     <script src='./CreateLayer.js'></script>
-    <!-- <script src='./esri_layerList.js'></script> -->
     <script src='./esri.js'></script>
    
     </script>

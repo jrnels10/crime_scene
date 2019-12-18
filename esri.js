@@ -1,18 +1,15 @@
 $(document).ready(function () {
 
   return require([
-    'esri/Map',
-    'esri/views/MapView',
-    'esri/widgets/TimeSlider',
-    'esri/layers/support/TimeInfo',
-    "esri/widgets/Expand",
-    "esri/widgets/BasemapGallery"
+    "esri/Map",
+    "esri/views/MapView",
+    "esri/geometry/support/webMercatorUtils",
+    'esri/widgets/TimeSlider'
   ], function (
     Map,
     MapView,
-    TimeSlider,
-    Expand,
-    BasemapGallery
+    webMercatorUtils,
+    TimeSlider
   ) {
     var map = new Map({
       basemap: 'gray'
@@ -24,56 +21,65 @@ $(document).ready(function () {
       zoom: 10, // Sets zoom level based on level of detail (LOD)
       center: [-112, 33.35]
     });
-    var basemapGallery = new BasemapGallery({
-      view: view,
-      container: document.createElement("div")
+    $(function () {
+      $("#firstDate").datepicker();
     });
+    $(function () {
+      $("#lastDate").datepicker();
+    });
+    // var basemapGallery = new BasemapGallery({
+    //   view: view,
+    //   container: document.createElement("div")
+    // });
 
-    var bgExpand = new Expand({
-      view: view,
-      content: basemapGallery
-    });
+    // var bgExpand = new Expand({
+    //   view: view,
+    //   content: basemapGallery
+    // });
 
     $('#city-selected li').on('click', function () {
       typeSelected = $(this).text()
       $("#city-text").html(typeSelected);
-      // layer.definitionExpression = `OccurredOn <= '${timeSlider.timeExtent.end.getTime()}' AND Type = '${typeSelected}'`
     })
     $('#year-selected li').on('click', function () {
       typeSelected = $(this).text()
       $("#year-text").html(typeSelected);
-      // layer.definitionExpression = `OccurredOn <= '${timeSlider.timeExtent.end.getTime()}' AND Type = '${typeSelected}'`
     })
     $('#type-selected li').on('click', function () {
-      typeSelected = $(this).text()
-      $("#type-text").html(typeSelected);
-      // layer.definitionExpression = `OccurredOn <= '${timeSlider.timeExtent.end.getTime()}' AND Type = '${typeSelected}'`
+      typeSelected = $(this).text();
+      $("#type-filter").html(typeSelected);
     })
 
 
     const timeSlider = new TimeSlider({
       container: 'timeSlider',
-      playRate: 100,
+      playRate: 50,
       stops: {
         interval: {
           value: 1,
-          unit: 'days'
+          unit: 'hours'
         }
       }
     });
-
-    // view.ui.add(bgExpand, 'top-right');
+    view.on('drag', (e) => {
+      console.log(view.extent)
+      view.hitTest(e).then(res => {
+        console.log(res)
+      })
+    })
     view.ui.add(timeSlider, 'manual');
     $(".fa-search").on('click', () => {
-      let cityText = $("#city-text").text();
+      let startDate = $("#firstDate").val();
+      let endDate = $("#lastDate").val();
       let yearText = $("#year-text").text();
-      let typeText = $("#type-text").text();
-      getDataByCity(cityText, yearText, typeText)
+      let crimeType = $("#type-text").text();
+      let latLonMin = webMercatorUtils.xyToLngLat(view.extent.xmin, view.extent.ymin);
+      let latLonMax = webMercatorUtils.xyToLngLat(view.extent.xmax, view.extent.ymax);
+      getDataByCity('phoenix', startDate, endDate, latLonMax[1], latLonMax[0], latLonMin[1], latLonMin[0], typeSelected)
         .then((res) => {
-          createLayer(res, map, view, timeSlider)
+          createLayer(res, map, view, timeSlider, startDate, endDate)
         });
 
     });
-  })
-
+  });
 });

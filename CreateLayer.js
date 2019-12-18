@@ -1,4 +1,4 @@
-async function createLayer(data, map, view, timeSlider, yearText) {
+async function createLayer(data, map, view, timeSlider, startDate, endDate) {
     var layer;
     return require([
         'esri/Map',
@@ -50,7 +50,7 @@ async function createLayer(data, map, view, timeSlider, yearText) {
             })
         ];
 
-
+        debugger
         data.map(item => {
             if (item.Date !== null) {
                 // console.log(item.Date)
@@ -110,72 +110,102 @@ async function createLayer(data, map, view, timeSlider, yearText) {
                 type: 'simple-marker', // autocasts as new SimpleLineSymbol()
                 color: '#B8EE30',
                 width: '0.5px',
+                size: 3.75,
                 style: 'circle'
             },
             traffic: {
                 type: 'simple-marker', // autocasts as new SimpleLineSymbol()
                 color: '#26DFD0',
                 width: '0.5px',
+                size: 3.75,
+                outline: {
+                    color: [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    width: 1
+                },
                 style: 'circle'
             },
             otherSym: {
                 type: 'simple-marker', // autocasts as new SimpleLineSymbol()
-                color: '#27231F',
+                color: '#ad1507',
                 width: '0.5px',
+                size: 3.75,
+                outline: {
+                    color: [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    width: 1
+                },
                 style: 'circle'
             },
             prisonerTrans: {
                 type: 'simple-marker', // autocasts as new SimpleLineSymbol()
                 color: '#F9D030',
                 width: '0.5px',
+                size: 3.75,
                 style: 'circle'
             },
             propCrime: {
                 type: 'simple-marker', // autocasts as new SimpleLineSymbol()
                 color: '#C8651B',
                 width: '0.5px',
+                size: 3.75,
                 style: 'circle'
             },
             familyOffense: {
                 type: 'simple-marker', // autocasts as new SimpleLineSymbol()
                 color: '#DE0001',
                 width: '0.5px',
+                size: 3.75,
                 style: 'circle'
             },
             breakingEntering: {
                 type: 'simple-marker', // autocasts as new SimpleLineSymbol()
                 color: '#0000A3',
                 width: '0.5px',
+                size: 3.75,
                 style: 'circle'
             },
             drugs: {
                 type: 'simple-marker', // autocasts as new SimpleLineSymbol()
                 color: '#40B0DF',
                 width: '0.5px',
+                size: 3.75,
                 style: 'circle'
             },
             disorder: {
                 type: 'simple-marker', // autocasts as new SimpleLineSymbol()
                 color: '#54086B',
                 width: '0.5px',
+                size: 3.75,
                 style: 'circle'
             },
             death: {
                 type: 'simple-marker', // autocasts as new SimpleLineSymbol()
                 color: '#D6AD60',
                 width: '0.5px',
+                size: 3.75,
                 style: 'circle'
             },
             liqour: {
                 type: 'simple-marker', // autocasts as new SimpleLineSymbol()
                 color: '#4D0011',
                 width: '0.5px',
+                size: 3.75,
                 style: 'circle'
             },
             assualtWeapon: {
                 type: 'simple-marker', // autocasts as new SimpleLineSymbol()
                 color: '#E4E5E8',
                 width: '0.5px',
+                size: 3.75,
                 style: 'circle'
             }
         }
@@ -271,55 +301,38 @@ async function createLayer(data, map, view, timeSlider, yearText) {
         };
         layer.renderer = renderer;
         map.add(layer);
-        let typeSelected = '';
-        const categories = data.map(item => {
-            return item.Type;
-        })
-        const categoriesList = categories.filter((item, idx) => { return categories.indexOf(item) == idx });
+        // const categories = data.map(item => {
+        //     return item.Type;
+        // })
+        // const categoriesList = categories.filter((item, idx) => { return categories.indexOf(item) == idx });
 
-        categoriesList.map(item => {
-            const li = $('<li></li>');
-            $("#type-selected").append(li.html(item))
-        })
+        // categoriesList.map(item => {
+        //     const li = $('<li></li>');
+        //     $("#type-selected").append(li.html(item))
+        // })
 
 
         // debugger
-
         view.whenLayerView(layer).then(function (lv) {
             layerView = lv;
 
-            // start time of the time slider - 5/25/2019
-            const start = new Date('2017', 11, 12);
-            // set time slider's full extent to
-            // 5/25/5019 - until end date of layer's fullTimeExtent
+            // start and end dats for moving timeSlider
+            const start = new Date(startDate);
+            const end = new Date(start);
+            end.setDate(end.getDate() + 2);
+
+            // timeSlider time range
             timeSlider.fullTimeExtent = {
                 start: start,
                 end: layer.timeInfo.fullTimeExtent.end
             };
 
-            // We will be showing earthquakes with one day interval
-            // when the app is loaded we will show earthquakes that
-            // happened between 5/25 - 5/26.
-            const end = new Date(start);
-            // end of current time extent for time slider
-            // showing earthquakes with one day interval
-            end.setDate(end.getDate() + 1);
-
-            // Values property is set so that timeslider
-            // widget show the first day. We are setting
-            // the thumbs positions.
             timeSlider.values = [start, end];
         });
 
-        // watch for time slider timeExtent change
         timeSlider.watch("timeExtent", function () {
-            // only show earthquakes happened up until the end of
-            // timeSlider's current time extent.
             layer.definitionExpression =
-                `OccurredOn <= '${timeSlider.timeExtent.end.getTime()}'`
-
-            // now gray out earthquakes that happened before the time slider's current
-            // timeExtent... leaving footprint of earthquakes that already happened
+                `OccurredOn <= '${timeSlider.timeExtent.end.getTime()}'`;
             layerView.effect = {
                 filter: {
                     timeExtent: timeSlider.timeExtent,
@@ -327,34 +340,6 @@ async function createLayer(data, map, view, timeSlider, yearText) {
                 },
                 excludedEffect: "grayscale(20%) opacity(15%)"
             };
-
-            // // // // wait till the layer view is loaded
-            // view.whenLayerView(lyr).then(function (lv) {
-            //   layerView = lv;
-            //   const start = new Date(2009, 4, 25);
-            //   timeSlider.fullTimeExtent = {
-            //     start: lyr.timeInfo.fullTimeExtent.start,
-            //     end: new Date()
-            //   };
-            //   const end = new Date(start);
-            //   end.setDate(end.getDate() + 100);
-            //   timeSlider.values = [start, end];
-            // });
-
-            // // watch for time slider timeExtent change
-            // timeSlider.watch('timeExtent', function () {
-            //   `OccurredOn <= '${timeSlider.timeExtent.start.getTime()}'`
-            //   layerView.effect = {
-            //     filter: {
-            //       timeExtent: timeSlider.timeExtent,
-            //       geometry: view.extent
-            //     },
-            //     excludedEffect: 'grayscale(20%) opacity(12%)'
-            //   };
-            // });
-        })
-        return view;
-
-
+        });
     });
-}
+};
